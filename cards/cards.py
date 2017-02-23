@@ -197,7 +197,7 @@ class BurningWish(Card):
                                        consequences=[MoveCard(self.name, 'Hand', 'Exile'),
                                                      MoveCard(card_for_burning_wish, 'Sideboard', 'Hand'),
                                                      AddStorm()])
-        self.add_mana_action(burning_wish_wish, paying=color_combinations(ColorDict({'Red': 1, 'Colorless': 1})))
+            self.add_mana_action(burning_wish_wish, paying=color_combinations(ColorDict({'Red': 1, 'Colorless': 1})))
 
 class ReforgeTheSoul(Card)
     def __init__(self):
