@@ -5,3 +5,4 @@ CARDS_FOR_CHROME_MOX = ['Elvish Spirit Guide', 'Simian Spirit Guide',
                         'Gitaxian Probe', 'Land Grant', 'Manamorphose',
                         'Burning Wish', 'Reforge the Soul']
 CARDS_FOR_BURNING_WISH = ['Empty the Warrens', 'Reforge the Soul']
+ZONES = ['Hand', 'Battlefield', 'Graveyard', 'Exile', 'Sideboard']
