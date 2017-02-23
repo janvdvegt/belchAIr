@@ -1,5 +1,5 @@
 from mana_iterator import color_combinations, fill_up_remaining_colors
-from requirements import PayMana, InHand, InPlay, Untapped
+from requirements import ManaInPool
 from consequences import ReduceMana, AddMana, MoveCard, Tap, AddStorm
 from color_dict import ColorDict
 from action import Action
@@ -21,7 +21,7 @@ class Card(object):
         if paying is not None and adding is None:
             for option in paying:
                 next_action = action.copy()
-                next_action.add_requirement(PayMana(option))
+                next_action.add_requirement(ManaInPool(option))
                 next_action.add_consequence(ReduceMana(option))
                 self.add_action(next_action)
         elif paying is None and adding is not None:
@@ -33,7 +33,7 @@ class Card(object):
             for option_add in adding:
                 for option_pay in paying:
                     next_action = action.copy()
-                    next_action.add_requirement(PayMana(option_pay))
+                    next_action.add_requirement(ManaInPool(option_pay))
                     next_action.add_consequence(ReduceMana(option_pay))
                     next_action.add_consequence(AddMana(option_add))
                     self.add_action(next_action)

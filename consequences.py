@@ -99,3 +99,18 @@ class Belch(Consequence):
 class AddRiteMana(Consequence):
     def happen(self, game_state):
         game_state.add_rite_mana()
+
+
+class UntapPermanents(Consequence):
+    def happen(self, game_state):
+        game_state.untap_permanents()
+
+
+class DealGoblinDamage(Consequence):
+    def happen(self, game_state):
+        game_state.goblin_damage()
+
+
+class StormCountZero(Consequence):
+    def happen(self, game_state):
+        game_state.storm_count_zero()
