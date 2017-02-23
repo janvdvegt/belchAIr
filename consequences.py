@@ -7,7 +7,7 @@ class Consequence(object):
     def happen(selfself, game_state):
         pass
 
-class ManaConsequence(object):
+class ManaConsequence(Consequence):
     '''
     For Consequences that affect mana
     '''
