@@ -46,7 +46,7 @@ class MoveCard(CardConsequence):
     Moving a Card
     """
     def __init__(self, card, from_zone, to_zone):
-        super(self, MoveCard).__init__(card)
+        super(MoveCard, self).__init__(card)
         self.from_zone = from_zone
         self.to_zone = to_zone
 
