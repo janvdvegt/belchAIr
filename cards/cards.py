@@ -18,26 +18,33 @@ seething_song.add_mana_action(seething_song_action,
                               paying=color_combinations(ColorDict({'Red': 1,
                                                                    'Colorless': 2})))
 
-taiga = Card('Taiga')
-taiga_action_play = Action(requirements=[CardInHand('Taiga')],
-                           consequences=[MoveCard('Taiga', 'Hand', 'Battlefield')])
-taiga_action_tap = Action(requirements=[CardUntapped('Taiga')],
-                          consequences=[Tap('Taiga')])
-taiga.add_action(taiga_action_play)
-taiga.add_mana_action(taiga_action_tap,
-                      adding=fill_up_remaining_colors(1, ['Red', 'Green'], ColorDict()))
+class Taiga(Card):
+    def __init__(self):
+        super(Taiga, self).__init__('Taiga')
 
-elvish_spirit_guide = Card('Elvish Spirit Guide')
-elvish_spirit_guide_action = Action(requirements=[CardInHand('Elvish Spirit Guide')],
-                                    consequences=[AddMana(ColorDict({'Green': 1})),
-                                                  MoveCard('Elvish Spirit Guide', 'Hand', 'Exile')])
-elvish_spirit_guide.add_action(elvish_spirit_guide_action)
+        taiga_action_play = Action(requirements=[CardInHand('Taiga')],
+                                   consequences=[MoveCard('Taiga', 'Hand', 'Battlefield')])
+        taiga_action_tap = Action(requirements=[CardUntapped('Taiga')],
+                                  consequences=[Tap('Taiga')])
+        self.add_action(taiga_action_play)
+        self.add_mana_action(
+            taiga_action_tap,
+            adding=fill_up_remaining_colors(1, ['Red', 'Green'], ColorDict()))
+class ElvishSpiritGuide(Card):
+    def __init__(self):
+        super(ElvishSpiritGuide, self).__init__('Elvish Spirit Guide')
+        elvish_spirit_guide_action = Action(requirements=[CardInHand('Elvish Spirit Guide')],
+                                            consequences=[AddMana(ColorDict({'Green': 1})),
+                                                MoveCard('Elvish Spirit Guide', 'Hand', 'Exile')])
+        self.add_action(elvish_spirit_guide_action)
 
-simian_spirit_guide = Card('Simian Spirit Guide')
-simian_spirit_guide_action = Action(requirements=[CardInHand('Simian Spirit Guide')],
-                                    consequences=[AddMana(ColorDict({'Red': 1})),
+class SimianSpiritGuide(Card):
+    def __init__(self):
+        super(SimianSpiritGuide, self).__init__('Simian Spirit Guide')
+        simian_spirit_guide_action = Action(requirements=[CardInHand('Simian Spirit Guide')],
+                                            consequences=[AddMana(ColorDict({'Red': 1})),
                                                   MoveCard('Simian Spirit Guide', 'Hand', 'Exile')])
-simian_spirit_guide.add_action(simian_spirit_guide_action)
+        self.add_action(simian_spirit_guide_action)
 
 tinder_wall = Card('Tinder Wall')
 tinder_wall_play_action = Action(requirements=[CardInHand('Tinder Wall'),
