@@ -15,6 +15,11 @@ class ColorDict(defaultdict):
         for k in c_dict:
             self[k] += c_dict[k]
 
+    def subtract_mana(self, c_dict):
+        # Subtracts c_dict of internal color dict
+        for k in c_dict:
+            self[k] -= c_dict[k]
+
     def copy(self):
         c_dict = defaultdict(int)
         for k in self:

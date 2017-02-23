@@ -31,13 +31,16 @@ class Taiga(Card):
             taiga_action_tap,
             adding=fill_up_remaining_colors(1, ['Red', 'Green'], ColorDict()))
 
+
 class ElvishSpiritGuide(Card):
     def __init__(self):
         super(ElvishSpiritGuide, self).__init__('Elvish Spirit Guide')
         elvish_spirit_guide_action = Action(requirements=[CardInHand(self.name)],
                                             consequences=[AddMana(ColorDict({'Green': 1})),
                                                           MoveCard(self.name, 'Hand', 'Exile')])
+
         self.add_action(elvish_spirit_guide_action)
+
 
 class SimianSpiritGuide(Card):
     def __init__(self):
