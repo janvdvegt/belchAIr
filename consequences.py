@@ -14,6 +14,13 @@ class ManaConsequence(Consequence):
     def __init__(self, c_dict):
         self.c_dict = c_dict
 
+class CardConsequence(Consequence):
+    '''
+    Consequences for cards
+    '''
+    def __init__(self, card):
+        self.card = card
+
 class ReduceMana(ManaConsequence):
     '''
     Pay Mana
@@ -27,12 +34,7 @@ class AddMana(ManaConsequence):
     '''
     def happen(self, game_state):
         game_state.add_mana(self.c_dict)
-class CardConsequence(Consequence):
-    '''
-    Consequences for cards
-    '''
-    def __init__(self, card):
-        self.card = card
+
 
 class MoveCard(CardConsequence):
     '''
