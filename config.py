@@ -1,0 +1,1 @@
+COLORS = ['Red', 'Green', 'Blue']
