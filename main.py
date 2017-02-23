@@ -1,5 +1,7 @@
 from cards.cards import *
 from game_state import GameState
+from agent import Agent
+from timeit import timeit
 
 taiga = Taiga()
 elvish_spirit_guide = ElvishSpiritGuide()
@@ -42,8 +44,17 @@ game_state.add_card(reforge_the_soul, 0, 1)
 game_state.reset_game()
 game_state.draw_opening_hand()
 
-print(game_state)
+agent = Agent(game_state)
+agent.run()
 
+
+def run_game():
+    game_state.reset_game()
+    game_state.draw_opening_hand()
+    agent = Agent(game_state)
+    agent.run()
+
+#print(timeit('run_game()', setup='from __main__ import run_game', number=1000))
 
 """
 game_state.increase_card_count('Lions Eye Diamond', 'Hand')

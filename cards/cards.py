@@ -2,7 +2,7 @@ from mana_iterator import color_combinations, fill_up_remaining_colors
 from requirements import ManaInPool, CardInHand, CardUntapped, CardInPlay, CardInSideboard, \
                          CardInDeck, CardNotInHand
 from consequences import AddMana, MoveCard, Tap, AddStorm, AddRiteMana, AddGoblins, DrawCard, \
-                         Shuffle, DiscardHand, Belch
+                         Shuffle, DiscardHand, Belch, ReduceMana
 from color_dict import ColorDict
 from action import Action
 from card import Card
@@ -56,6 +56,7 @@ class TinderWall(Card):
         tinder_wall_play_action = Action(requirements=[CardInHand(self.name),
                                                        ManaInPool(ColorDict({'Green': 1}))],
                                          consequences=[MoveCard(self.name, 'Hand', 'Battlefield'),
+                                                       ReduceMana(ColorDict({'Green': 1})),
                                                        AddStorm()])
         tinder_wall_mana_action = Action(requirements=[CardInPlay(self.name)],
                                          consequences=[MoveCard(self.name, 'Battlefield', 'Graveyard'),
@@ -87,6 +88,7 @@ class RiteOfFlame(Card):
         rite_of_flame_action = Action(requirements=[CardInHand(self.name),
                                                     ManaInPool(ColorDict({'Red': 1}))],
                                       consequences=[MoveCard(self.name, 'Hand', 'Graveyard'),
+                                                    ReduceMana(ColorDict({'Red': 1})),
                                                     AddStorm(),
                                                     AddRiteMana()])
         self.add_action(rite_of_flame_action)
@@ -112,7 +114,7 @@ class GitaxianProbe(Card):
 class LandGrant(Card):
     def __init__(self):
         super(LandGrant, self).__init__('Land Grant')
-        land_grant_action_land = Action(requirements=[CardInHand('Taiga'),
+        land_grant_action_land = Action(requirements=[CardNotInHand('Taiga'),
                                                       CardInHand(self.name),
                                                       CardInDeck('Taiga')],
                                 consequences=[MoveCard('Land Grant', 'Hand', 'Graveyard'),

@@ -141,6 +141,7 @@ class GameState(object):
                 break
             total_damage += 1
         self.damage_opponent(total_damage)
+        self.taiga_bottom = True
 
     def discard_hand(self):
         for card_name in self.hand:
@@ -168,7 +169,7 @@ class GameState(object):
         return deck_list
 
     def tap_card(self, card):
-        self.tapped[card.name] += 1
+        self.tapped[card] += 1
 
     def add_storm(self):
         self.storm_count += 1
@@ -214,19 +215,36 @@ class GameState(object):
 
     def __str__(self):
         repr_str = 'GAME STATE: \n'
-        repr_str += '  Cards in hand:      ' + str(sum([self.hand[k] for k in self.hand])) + '\n'
-        repr_str += '  Cards in deck:      ' + str(sum([self.deck[k] for k in self.deck])) + '\n'
-        repr_str += '  Cards in play:      ' + str(sum([self.battlefield[k] for k in self.battlefield])) + '\n'
-        repr_str += '  Cards in graveyard: ' + str(sum([self.graveyard[k] for k in self.graveyard])) + '\n'
-        repr_str += '  Cards in sideboard: ' + str(sum([self.sideboard[k] for k in self.sideboard])) + '\n'
-        repr_str += 'HAND: \n'
+        #repr_str += '  Cards in hand:      ' + str(sum([self.hand[k] for k in self.hand])) + '\n'
+        #repr_str += '  Cards in deck:      ' + str(sum([self.deck[k] for k in self.deck])) + '\n'
+        #repr_str += '  Cards in play:      ' + str(sum([self.battlefield[k] for k in self.battlefield])) + '\n'
+        #repr_str += '  Cards in graveyard: ' + str(sum([self.graveyard[k] for k in self.graveyard])) + '\n'
+        #repr_str += '  Cards in sideboard: ' + str(sum([self.sideboard[k] for k in self.sideboard])) + '\n'
+
+
+        repr_str += 'Hand: ' + str(sum([self.hand[k] for k in self.hand])) + ', '
+        repr_str += 'Deck: ' + str(sum([self.deck[k] for k in self.deck])) + ', '
+        repr_str += 'Play: ' + str(sum([self.battlefield[k] for k in self.battlefield])) + ', '
+        repr_str += 'GY: ' + str(sum([self.graveyard[k] for k in self.graveyard])) + ', '
+        #repr_str += '  Cards in sideboard: ' + str(sum([self.sideboard[k] for k in self.sideboard])) + '\n'
+
+        repr_str += '\nHAND: \n'
         for k in self.hand:
             if self.hand[k] > 0:
-                repr_str += '  ' + k + ': ' + str(self.hand[k]) + '\n'
-        repr_str += 'MANA POOL: \n'
+                repr_str += k + ': ' + str(self.hand[k]) + ', '
+        repr_str += '\nPLAY: \n'
+        for k in self.battlefield:
+            if self.battlefield[k] > 0:
+                repr_str += k + ': ' + str(self.battlefield[k]) + ', '
+        repr_str += '\nTAPPED: \n'
+        for k in self.tapped:
+            if self.tapped[k] > 0:
+                repr_str += k + ': ' + str(self.tapped[k]) + ', '
+
+        repr_str += '\nMANA POOL: '
         for c in COLORS:
-            repr_str += '  ' + c + ': ' + str(self.mana_pool[c]) + '\n'
-        repr_str += 'ACTIONS: \n'
-        repr_str += '  Number of actions possible: ' + str(sum(self.possible_actions()[0])) + '\n'
+            repr_str += '  ' + c + ': ' + str(self.mana_pool[c]) + ', '
+        repr_str += '\nACTIONS: ' + str(sum(self.possible_actions()[0])) + '\n'
+        repr_str += 'GOBLINS: ' + str(self.goblins) + '\n'
         repr_str += 'TURN: ' + str(self.turn) + '\n'
         return repr_str
