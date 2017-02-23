@@ -7,6 +7,9 @@ from config import COLORS
 
 
 class Action(object):
+    """
+    Action Class, gathers requirements and consequences.
+    """
     def __init__(self, requirements=None, consequences=None):
         self.requirements = requirements if requirements else []
         self.consequences = consequences if consequences else []

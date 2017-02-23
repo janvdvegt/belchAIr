@@ -5,8 +5,8 @@ class Consequence(object):
     #def __init__(self):
     #    pass
 
-    def happen(self, game_state):
-        pass
+    #def happen(self, game_state):
+    #    pass
 
 
 class ManaConsequence(Consequence):
@@ -57,23 +57,32 @@ class MoveCard(CardConsequence):
 
 class Tap(CardConsequence):
     """
-    Tapping a Card
+    Tap a Card.
     """
     def happen(self, game_state):
         game_state.tap_card(self.card)
 
 
 class AddStorm(Consequence):
+    """
+    Add a Storm Counter.
+    """
     def happen(self, game_state):
         game_state.add_storm()
 
 
 class AddGoblins(Consequence):
+    """
+    Add a Goblin to the Battlefield.
+    """
     def happen(self, game_state):
         game_state.add_goblins()
 
 
 class DrawCard(Consequence):
+    """
+    Draw a Card from the Deck.
+    """
     def __init__(self, amount=1):
         self.amount = amount
 
@@ -82,20 +91,32 @@ class DrawCard(Consequence):
 
 
 class Shuffle(Consequence):
+    """
+    Shuffle the Deck.
+    """
     def happen(self, game_state):
         game_state.shuffle()
 
 
 class DiscardHand(Consequence):
+    """
+    Discard the Hand.
+    """
     def happen(self, game_state):
         game_state.discard_hand()
 
 
 class Belch(Consequence):
+    """
+    Activate Goblin Charbelcher.
+    """
     def happen(self, game_state):
         game_state.belch()
 
 
 class AddRiteMana(Consequence):
+    """
+    Add Mana from Rite of Flame
+    """
     def happen(self, game_state):
         game_state.add_rite_mana()
