@@ -39,5 +39,58 @@ game_state.add_card(goblin_charbelcher, 4, 0)
 game_state.add_card(chrome_mox, 3, 0)
 game_state.add_card(burning_wish, 4, 0)
 game_state.add_card(reforge_the_soul, 0, 1)
+game_state.reset_game()
+game_state.draw_opening_hand()
 
-print(sum([game_state.deck[k] for k in game_state.deck]))
+
+
+
+"""
+game_state.increase_card_count('Lions Eye Diamond', 'Hand')
+game_state.reduce_card_count('Lions Eye Diamond', 'Deck')
+#print(game_state.deck)
+print(game_state.hand)
+possible_actions, all_actions = game_state.possible_actions()
+possible_actions = [action for action, legal in zip(all_actions, possible_actions) if legal == 1]
+
+done = False
+for action in possible_actions:
+    for con in action.consequences:
+        print(type(con))
+        if isinstance(con, MoveCard):
+            if con.card == 'Lions Eye Diamond':
+                action.resolve(game_state)
+                done = True
+                break
+    if done:
+        break
+
+print(done)
+print(game_state.hand)
+print(game_state.battlefield)
+possible_actions, all_actions = game_state.possible_actions()
+possible_actions = [action for action, legal in zip(all_actions, possible_actions) if legal == 1]
+
+done = False
+for action in possible_actions:
+    for con in action.consequences:
+        print(type(con))
+        if isinstance(con, DiscardHand):
+            action.resolve(game_state)
+            done = True
+            break
+    if done:
+        break
+
+print(done)
+print(game_state.hand)
+print(game_state.battlefield)
+
+print(len(game_state.state_space()))
+print(game_state.state_space())
+
+
+#print(sum([game_state.deck[k] for k in game_state.deck]))
+#print(sum([game_state.sideboard[k] for k in game_state.sideboard]))
+#print(len(game_state.all_actions()))
+"""

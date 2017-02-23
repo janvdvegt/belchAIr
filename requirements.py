@@ -2,10 +2,8 @@ class Requirement(object):
     """
     Base Requirement
     """
-    #def __init__(self):
-
-    #def requirement_met(self):
-
+    def __str__(self):
+        return str(type(self))
 
 
 class CardUntapped(Requirement):

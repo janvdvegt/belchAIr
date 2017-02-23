@@ -1,8 +1,8 @@
 from color_dict import ColorDict
-from config import ZONES
+from config import COLORS
 from action import Action
-from consequences import UntapPermanents, StormCountZero, DealGoblinDamage, DrawCard
-import cards
+from consequences import UntapPermanents, StormCountZero, DealGoblinDamage, \
+                         DrawCard, ResetManaPool
 from numpy.random import choice
 from random import shuffle
 
@@ -31,12 +31,14 @@ class GameState(object):
     def reset_game(self):
         for card, maindeck, sideboard in self.cards:
             self.deck[card.name] = maindeck
-            self.sideboard[card.name] = sideboard
+            if sideboard > 0:
+                self.sideboard[card.name] = sideboard
             self.hand[card.name] = 0
             self.exile[card.name] = 0
-            self.battlefield[card.name] = 0
+            if card.is_permanent:
+                self.battlefield[card.name] = 0
             self.graveyard[card.name] = 0
-            if card.is_tappable():
+            if card.is_tappable:
                 self.tapped[card.name] = 0
         self.mana_pool = ColorDict()
         self.goblins = 0
@@ -50,22 +52,65 @@ class GameState(object):
 
         :return:
         """
-        pass
+        all_actions = self.all_actions()
+        legal_actions = [x.allowed(self) * 1 for x in all_actions]
+        return legal_actions, all_actions
 
     def all_actions(self):
-        actions = []
-        actions.append(Action(requirements=[], consequences=[UntapPermanents(),
-                                                             StormCountZero(),
-                                                             DealGoblinDamage(),
-                                                             DrawCard()]))
-        for card in self.cards:
+        actions = [Action(requirements=[], consequences=[UntapPermanents(),
+                                                         ResetManaPool(),
+                                                         StormCountZero(),
+                                                         DealGoblinDamage(),
+                                                         DrawCard()])]
+        for card, _, _ in self.cards:
             actions.extend(card.actions)
-            print(card.name, len(card.actions))
-        print(len(actions))
-
+        return actions
 
     def state_space(self):
-        pass
+        representation_list = []
+        for card, _, _ in self.cards:
+            representation_list.append(self.deck[card.name])
+        for card, _, _ in self.cards:
+            representation_list.append(self.hand[card.name])
+        for card, _, _ in self.cards:
+            representation_list.append(self.battlefield[card.name])
+        for card, _, _ in self.cards:
+            representation_list.append(self.graveyard[card.name])
+        for card, _, _ in self.cards:
+            if card.name in self.tapped:
+                representation_list.append(self.tapped[card.name])
+        for card, _, _ in self.cards:
+            if card.name in self.sideboard:
+                representation_list.append(self.sideboard[card.name])
+
+        for color in COLORS:
+            representation_list.append(self.mana_pool[color])
+        representation_list.append(self.goblins)
+        representation_list.append(self.storm_count)
+        representation_list.append(self.opp_life_total)
+        representation_list.append(self.taiga_bottom * 1)
+        return representation_list
+
+    def untapped(self, card):
+        return self.battlefield[card] > self.tapped[card]
+
+    def mana_floating(self, c_dict):
+        for k in c_dict:
+            if self.mana_pool[k] < c_dict[k]:
+                return False
+        return True
+
+    def card_in_hand(self, card):
+        return self.hand[card] > 0
+
+    def card_in_play(self, card):
+        return self.battlefield[card] > 0
+
+    def card_in_sideboard(self, card):
+        return self.sideboard[card] > 0
+
+    def card_in_deck(self, card):
+        return self.deck[card] > 0
 
     def storm_count_zero(self):
         self.storm_count = 0
@@ -78,7 +123,7 @@ class GameState(object):
 
     def untap_permanents(self):
         for card, _, _ in self.cards:
-            if card.is_tappable():
+            if card.is_tappable:
                 self.tapped[card.name] = 0
 
     def add_rite_mana(self):
@@ -134,15 +179,23 @@ class GameState(object):
     def reduce_mana(self, c_dict):
         self.mana_pool.subtract_mana(c_dict)
 
+    def reset_mana_pool(self):
+        self.mana_pool.subtract_mana(self.mana_pool)
+
     def increase_card_count(self, card, zone):
-        self._zone_dispatcher(zone)[card.name] += 1
+        self._zone_dispatcher(zone)[card] += 1
 
     def reduce_card_count(self, card, zone):
-        self._zone_dispatcher(zone)[card.name] -= 1
+        self._zone_dispatcher(zone)[card] -= 1
+
+    def draw_opening_hand(self):
+        self.draw_cards(7)
 
     def _zone_dispatcher(self, zone):
         if zone == 'Graveyard':
             return self.graveyard
+        if zone == 'Battlefield':
+            return self.battlefield
         elif zone == 'Hand':
             return self.hand
         elif zone == 'Exile':
