@@ -4,7 +4,7 @@ class Consequence(object):
     '''
     def __init__(self):
         pass
-    def happen(selfself, game_state):
+    def happen(self game_state):
         pass
 
 class ManaConsequence(Consequence):
