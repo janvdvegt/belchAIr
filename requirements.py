@@ -1,15 +1,17 @@
 class Requirement(object):
     """
-    Base requirement, takes a game state function
+    Base Requirement
     """
-    def __init__(self):
-        raise NotImplementedError()
+    #def __init__(self):
 
-    def requirement_met(self):
-        raise NotImplementedError()
+    #def requirement_met(self):
+
 
 
 class CardUntapped(Requirement):
+    """
+    The Card must be untapped.
+    """
     def __init__(self, card):
         self.card = card
 
@@ -18,6 +20,9 @@ class CardUntapped(Requirement):
 
 
 class ManaInPool(Requirement):
+    """
+    A ColorDict of mana must be floating in the mana pool.
+    """
     def __init__(self, c_dict):
         self.c_dict = c_dict
 
@@ -26,6 +31,9 @@ class ManaInPool(Requirement):
 
 
 class CardInHand(Requirement):
+    """
+    A Card must be in the Hand.
+    """
     def __init__(self, card):
         self.card = card
 
@@ -34,6 +42,9 @@ class CardInHand(Requirement):
 
 
 class CardNotInHand(Requirement):
+    """
+    A Card must not be in the Hand.
+    """
     def __init__(self, card):
         self.card = card
 
@@ -42,6 +53,9 @@ class CardNotInHand(Requirement):
 
 
 class CardInPlay(Requirement):
+    """
+    A Card must be on the Battlefield.
+    """
     def __init__(self, card):
         self.card = card
 
@@ -50,6 +64,9 @@ class CardInPlay(Requirement):
 
 
 class CardInSideboard(Requirement):
+    """
+    A Card must be in the Sideboard.
+    """
     def __init__(self, card):
         self.card = card
 
@@ -58,6 +75,9 @@ class CardInSideboard(Requirement):
 
 
 class CardInDeck(Requirement):
+    """
+    A Card must be in the Deck.
+    """
     def __init__(self, card):
         self.card = card
 
