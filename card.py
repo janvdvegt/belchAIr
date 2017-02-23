@@ -27,8 +27,8 @@ class Card(object):
         Can the paying and adding dicts be checked in a more concise manner?
         Maybe add a method to ColorDict
         :param action Action
-        :param paying ColorDict
-        :param adding ColorDict
+        :param paying ColorDict, list or None
+        :param adding ColorDict, list or None
         :return: None
         """
         if isinstance(paying, ColorDict):

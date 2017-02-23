@@ -2,11 +2,6 @@ class Consequence(object):
     """
     Base Consequence class, which is used for Action constructors.
     """
-    #def __init__(self):
-    #    pass
-
-    #def happen(self, game_state):
-    #    pass
 
 
 class ManaConsequence(Consequence):
