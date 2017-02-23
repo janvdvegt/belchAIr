@@ -22,7 +22,6 @@ class SeethingSong(Card):
 class Taiga(Card):
     def __init__(self):
         super(Taiga, self).__init__('Taiga', tappable=True)
-
         taiga_action_play = Action(requirements=[CardInHand('Taiga')],
                                    consequences=[MoveCard('Taiga', 'Hand', 'Battlefield')])
         taiga_action_tap = Action(requirements=[CardUntapped('Taiga')],
