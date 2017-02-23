@@ -13,6 +13,7 @@ class ManaConsequence(Consequence):
     '''
     def __init__(self, c_dict):
         self.c_dict = c_dict
+
 class ReduceMana(ManaConsequence):
     '''
     Pay Mana
