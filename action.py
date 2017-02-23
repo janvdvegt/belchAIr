@@ -13,14 +13,7 @@ class Action(object):
 
     def allowed(self, game_state):
         # If this action is not allowed return False
-        # I tend to put the positive return first, it makes for less confusing statements.
-        return \
-            True \
-            if \
-            all([requirement.requirement_met(game_state) for requiements in self.requirements]) \
-            else \
-            False
-
+        return all([requirement.requirement_met(game_state) for requirement in self.requirements])
 
     def add_requirement(self, requirement):
         self.requirements.append(requirement)
