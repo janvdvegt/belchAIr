@@ -149,7 +149,7 @@ class LotusPetal(Card):
 
 class Manamorphose(Card)
     def __init__(self):
-        super(ManaInPool, self).__init__('Manamorphose')
+        super(Manamorphose, self).__init__('Manamorphose')
         manamorphose_action = Action(requirements=[CardInHand('Manamorphose')],
                                      consequences=[MoveCard('Manamorphose', 'Hand', 'Graveyard'),
                                                    DrawCard(),
