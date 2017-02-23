@@ -8,14 +8,19 @@ from config import COLORS
 
 class Action(object):
     def __init__(self, requirements=None, consequences=None):
-        self.requirements = [] if requirements is None else requirements
-        self.consequences = [] if consequences is None else consequences
+        self.requirements = requirements if requirements else []
+        self.consequences = consequences if consequences else []
 
     def allowed(self, game_state):
-        for requirement in self.requirements:
-            if not requirement.requirement_met(game_state):
-                return False
-        return True
+        # If this action is not allowed return False
+        # I tend to put the positive return first, it makes for less confusing statements.
+        return \
+            True \
+            if \
+            all([requirement.requirement_met(game_state) for requiements in self.requirements]) \
+            else \
+            False
+
 
     def add_requirement(self, requirement):
         self.requirements.append(requirement)
