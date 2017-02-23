@@ -9,9 +9,10 @@ class Card(object):
     """
     Card object
     """
-    def __init__(self, name):
+    def __init__(self, name, tappable=False):
         self.name = name
         self.actions = []
+        self.tappable = tappable
 
     def add_action(self, action):
         """
