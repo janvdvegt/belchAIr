@@ -33,5 +33,3 @@ def fill_up_remaining_colors(colorless_remaining, remaining_colors, spent_so_far
             fill_up_remaining_colors(colorless_remaining-1, remaining_colors[index:],
                                      newly_spent, options)
     return options
-
-print(fill_up_remaining_colors(1, ['R', 'G'], ColorDict(), []))

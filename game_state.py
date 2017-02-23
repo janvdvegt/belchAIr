@@ -2,7 +2,7 @@ from color_dict import ColorDict
 from config import COLORS
 from action import Action
 from consequences import UntapPermanents, StormCountZero, DealGoblinDamage, \
-                         DrawCard, ResetManaPool
+                         DrawCard, ResetManaPool, AddTurn
 from numpy.random import choice
 from random import shuffle
 
@@ -22,6 +22,7 @@ class GameState(object):
         self.storm_count = 0
         self.opp_life_total = 20
         self.taiga_bottom = False
+        self.turn = 1
 
         self.cards = []
 
@@ -45,6 +46,7 @@ class GameState(object):
         self.storm_count = 0
         self.opp_life_total = 20
         self.taiga_bottom = False
+        self.turn = 1
 
     def possible_actions(self):
         """
@@ -57,7 +59,8 @@ class GameState(object):
         return legal_actions, all_actions
 
     def all_actions(self):
-        actions = [Action(requirements=[], consequences=[UntapPermanents(),
+        actions = [Action(requirements=[], consequences=[AddTurn(),
+                                                         UntapPermanents(),
                                                          ResetManaPool(),
                                                          StormCountZero(),
                                                          DealGoblinDamage(),
@@ -191,6 +194,9 @@ class GameState(object):
     def draw_opening_hand(self):
         self.draw_cards(7)
 
+    def add_turn(self):
+        self.turn += 1
+
     def _zone_dispatcher(self, zone):
         if zone == 'Graveyard':
             return self.graveyard
@@ -205,3 +211,22 @@ class GameState(object):
         elif zone == 'Sideboard':
             return self.sideboard
         raise ValueError('Incorrect zone type', zone)
+
+    def __str__(self):
+        repr_str = 'GAME STATE: \n'
+        repr_str += '  Cards in hand:      ' + str(sum([self.hand[k] for k in self.hand])) + '\n'
+        repr_str += '  Cards in deck:      ' + str(sum([self.deck[k] for k in self.deck])) + '\n'
+        repr_str += '  Cards in play:      ' + str(sum([self.battlefield[k] for k in self.battlefield])) + '\n'
+        repr_str += '  Cards in graveyard: ' + str(sum([self.graveyard[k] for k in self.graveyard])) + '\n'
+        repr_str += '  Cards in sideboard: ' + str(sum([self.sideboard[k] for k in self.sideboard])) + '\n'
+        repr_str += 'HAND: \n'
+        for k in self.hand:
+            if self.hand[k] > 0:
+                repr_str += '  ' + k + ': ' + str(self.hand[k]) + '\n'
+        repr_str += 'MANA POOL: \n'
+        for c in COLORS:
+            repr_str += '  ' + c + ': ' + str(self.mana_pool[c]) + '\n'
+        repr_str += 'ACTIONS: \n'
+        repr_str += '  Number of actions possible: ' + str(sum(self.possible_actions()[0])) + '\n'
+        repr_str += 'TURN: ' + str(self.turn) + '\n'
+        return repr_str

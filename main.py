@@ -42,7 +42,7 @@ game_state.add_card(reforge_the_soul, 0, 1)
 game_state.reset_game()
 game_state.draw_opening_hand()
 
-
+print(game_state)
 
 
 """

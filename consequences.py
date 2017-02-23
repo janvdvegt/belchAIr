@@ -53,8 +53,6 @@ class MoveCard(CardConsequence):
         self.to_zone = to_zone
 
     def resolve(self, game_state):
-        print(self.card)
-        print(self.from_zone)
         game_state.reduce_card_count(self.card, self.from_zone)
         game_state.increase_card_count(self.card, self.to_zone)
 
@@ -176,3 +174,10 @@ class ResetManaPool(Consequence):
 
     def __str__(self):
         return 'Reset mana pool'
+
+class AddTurn(Consequence):
+    def resolve(self, game_state):
+        game_state.add_turn()
+
+    def __str__(self):
+        return 'Adding turn'
