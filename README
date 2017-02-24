@@ -1,0 +1,17 @@
+# BelchAIr project
+
+The belchAIr project is a project to facilitate a learning environment for goldfishing the Belcher deck. The environment is almost ready, the bots not yet. Currently there are a number of discrepancies with real life goldfish Belcher and the current implementation.
+
+## Discrepancies:
+
+- You cannot sacrifice Lion's Eye Diamond as an instant, which means that it becomes a lot worse
+- Manamorphose costs 1R instead of 1R or 1G
+- You cannot mulligan yet
+- You cannot cast the Spirit Guides yet
+- Chrome Mox currently has to exile a card but makes all the colors once in play
+- Gitaxian Probe can only be cast for life
+
+## TODO:
+
+- Check after every action if the game is finished
+- Implement different reward functions that return after the game is finished

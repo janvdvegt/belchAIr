@@ -40,7 +40,6 @@ class CheckForManaAvailable(ManaConsequence):
     def resolve(self, game_state):
         return game_state.mana_floating(self.c_dict)
 
-
 class AddMana(ManaConsequence):
     """
     Gain Mana

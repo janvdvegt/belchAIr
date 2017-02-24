@@ -2,7 +2,7 @@ from mana_iterator import color_combinations, fill_up_remaining_colors
 from requirements import ManaInPool, CardInHand, CardUntapped, CardInPlay, CardInSideboard, \
                          CardInDeck, CardNotInHand
 from consequences import AddMana, MoveCard, Tap, AddStorm, AddRiteMana, AddGoblins, DrawCard, \
-                         Shuffle, DiscardHand, Belch
+                         Shuffle, DiscardHand, Belch, ReduceMana
 from color_dict import ColorDict
 from action import Action
 from card import Card
@@ -21,7 +21,7 @@ class SeethingSong(Card):
 
 class Taiga(Card):
     def __init__(self):
-        super(Taiga, self).__init__('Taiga', tappable=True)
+        super(Taiga, self).__init__('Taiga', is_tappable=True, is_permanent=True)
         taiga_action_play = Action(requirements=[CardInHand(self.name)],
                                    consequences=[MoveCard(self.name, 'Hand', 'Battlefield')])
         taiga_action_tap = Action(requirements=[CardUntapped(self.name)],
@@ -29,7 +29,8 @@ class Taiga(Card):
         self.add_action(taiga_action_play)
         self.add_mana_action(
             taiga_action_tap,
-            adding=fill_up_remaining_colors(1, ['Red', 'Green'], ColorDict()))
+            adding=fill_up_remaining_colors(1, ['Red', 'Green'], ColorDict(), []))
+
 
 class ElvishSpiritGuide(Card):
     def __init__(self):
@@ -37,7 +38,9 @@ class ElvishSpiritGuide(Card):
         elvish_spirit_guide_action = Action(requirements=[CardInHand(self.name)],
                                             consequences=[AddMana(ColorDict({'Green': 1})),
                                                           MoveCard(self.name, 'Hand', 'Exile')])
+
         self.add_action(elvish_spirit_guide_action)
+
 
 class SimianSpiritGuide(Card):
     def __init__(self):
@@ -49,10 +52,11 @@ class SimianSpiritGuide(Card):
 
 class TinderWall(Card):
     def __init__(self):
-        super(TinderWall, self).__init__('Tinder Wall')
+        super(TinderWall, self).__init__('Tinder Wall', is_permanent=True)
         tinder_wall_play_action = Action(requirements=[CardInHand(self.name),
                                                        ManaInPool(ColorDict({'Green': 1}))],
                                          consequences=[MoveCard(self.name, 'Hand', 'Battlefield'),
+                                                       ReduceMana(ColorDict({'Green': 1})),
                                                        AddStorm()])
         tinder_wall_mana_action = Action(requirements=[CardInPlay(self.name)],
                                          consequences=[MoveCard(self.name, 'Battlefield', 'Graveyard'),
@@ -60,14 +64,14 @@ class TinderWall(Card):
         self.add_action(tinder_wall_play_action)
         self.add_action(tinder_wall_mana_action)
 
-class PyrecticRitual(Card):
+class PyreticRitual(Card):
     def __init__(self):
         super(PyreticRitual, self).__init__('Pyretic Ritual')
         pyretic_ritual_action = Action(requirements=[CardInHand(self.name)],
                                        consequences=[AddMana({'Red': 3}),
                                                      AddStorm(),
                                                      MoveCard(self.name, 'Hand', 'Graveyard')])
-        self.add_mana_action(pyretic_ritual_action, adding=color_combinations(ColorDict({'Red': 1, 'Colorless': 1})))
+        self.add_mana_action(pyretic_ritual_action, paying=color_combinations(ColorDict({'Red': 1, 'Colorless': 1})))
 
 class DesperateRitual(Card):
     def __init__(self):
@@ -76,7 +80,7 @@ class DesperateRitual(Card):
                                          consequences=[AddMana({'Red': 3}),
                                                        AddStorm(),
                                                        MoveCard(self.name, 'Hand', 'Graveyard')])
-        self.add_mana_action(desperate_ritual_action, adding=color_combinations(ColorDict({'Red': 1, 'Colorless': 1})))
+        self.add_mana_action(desperate_ritual_action, paying=color_combinations(ColorDict({'Red': 1, 'Colorless': 1})))
 
 class RiteOfFlame(Card):
     def __init__(self):
@@ -84,6 +88,7 @@ class RiteOfFlame(Card):
         rite_of_flame_action = Action(requirements=[CardInHand(self.name),
                                                     ManaInPool(ColorDict({'Red': 1}))],
                                       consequences=[MoveCard(self.name, 'Hand', 'Graveyard'),
+                                                    ReduceMana(ColorDict({'Red': 1})),
                                                     AddStorm(),
                                                     AddRiteMana()])
         self.add_action(rite_of_flame_action)
@@ -109,7 +114,7 @@ class GitaxianProbe(Card):
 class LandGrant(Card):
     def __init__(self):
         super(LandGrant, self).__init__('Land Grant')
-        land_grant_action_land = Action(requirements=[CardInHand('Taiga'),
+        land_grant_action_land = Action(requirements=[CardNotInHand('Taiga'),
                                                       CardInHand(self.name),
                                                       CardInDeck('Taiga')],
                                 consequences=[MoveCard('Land Grant', 'Hand', 'Graveyard'),
@@ -126,7 +131,7 @@ class LandGrant(Card):
 
 class LionsEyeDiamond(Card):
     def __init__(self):
-        super(LionsEyeDiamond, self).__init__('Lions Eye Diamond')
+        super(LionsEyeDiamond, self).__init__('Lions Eye Diamond', is_permanent=True)
         lions_eye_diamond_play = Action(requirements=[CardInHand(self.name)],
                                         consequences=[MoveCard(self.name, 'Hand', 'Battlefield'),
                                                       AddStorm()])
@@ -134,33 +139,33 @@ class LionsEyeDiamond(Card):
                                             consequences=[DiscardHand(),
                                                           MoveCard(self.name, 'Battlefield', 'Graveyard')])
         self.add_action(lions_eye_diamond_play)
-        self.add_mana_action(lions_eye_diamond_activate, adding=[ColorDict({c: 3} for c in COLORS)])
+        self.add_mana_action(lions_eye_diamond_activate, adding=[ColorDict({c: 3}) for c in COLORS])
 
 class LotusPetal(Card):
     def __init__(self):
-        super(LotusPetal, self).__init__('Lotus Petal', tappable=True)
+        super(LotusPetal, self).__init__('Lotus Petal', is_permanent=True)
         lotus_petal_play = Action(requirements=[CardInHand(self.name)],
                                   consequences=[MoveCard(self.name, 'Hand', 'Battlefield'),
                                                 AddStorm()])
         lotus_petal_activate = Action(requirements=[CardInPlay(self.name)],
                                       consequences=[MoveCard(self.name, 'Battlefield', 'Graveyard')])
         self.add_action(lotus_petal_play)
-        self.add_mana_action(lotus_petal_activate, adding=[ColorDict({c: 1} for c in COLORS)])
+        self.add_mana_action(lotus_petal_activate, adding=[ColorDict({c: 1}) for c in COLORS])
 
-class Manamorphose(Card)
+class Manamorphose(Card):
     def __init__(self):
         super(Manamorphose, self).__init__('Manamorphose')
         manamorphose_action = Action(requirements=[CardInHand(self.name)],
                                      consequences=[MoveCard(self.name, 'Hand', 'Graveyard'),
                                                    DrawCard(),
                                                    AddStorm()])
-        manamorphose.add_mana_action(manamorphose_action,
+        self.add_mana_action(manamorphose_action,
                                      paying=color_combinations(ColorDict({'Red': 1, 'Colorless': 1})),
                                      adding=fill_up_remaining_colors(2, COLORS, ColorDict(), []))
 
 class GoblinCharbelcher(Card):
     def __init__(self):
-        super(GoblinCharbelcher, self).__init__('Goblin Charbelcher', tappable=True)
+        super(GoblinCharbelcher, self).__init__('Goblin Charbelcher', is_tappable=True, is_permanent=True)
         charbelcher_play = Action(requirements=[CardInHand(self.name)],
                                   consequences=[MoveCard(self.name, 'Hand', 'Battlefield'),
                                                 AddStorm()])
@@ -173,14 +178,14 @@ class GoblinCharbelcher(Card):
 
 class ChromeMox(Card):
     def __init__(self):
-        super(ChromeMox, self).__init__('Chrome Mox', tappable=True)
+        super(ChromeMox, self).__init__('Chrome Mox', is_tappable=True, is_permanent=True)
         for card_for_chrome_mox in CARDS_FOR_CHROME_MOX:
-        chrome_mox_play = Action(requirements=[CardInHand(self.name),
-                                               CardInHand(card_for_chrome_mox)],
-                                 consequences=[MoveCard(self.name, 'Hand', 'Battlefield'),
-                                               MoveCard(card_for_chrome_mox, 'Hand', 'Exile'),
-                                               AddStorm()])
-        self.add_action(chrome_mox_play)
+            chrome_mox_play = Action(requirements=[CardInHand(self.name),
+                                                   CardInHand(card_for_chrome_mox)],
+                                     consequences=[MoveCard(self.name, 'Hand', 'Battlefield'),
+                                                   MoveCard(card_for_chrome_mox, 'Hand', 'Exile'),
+                                                   AddStorm()])
+            self.add_action(chrome_mox_play)
         chrome_mox_activate = Action(requirements=[CardUntapped(self.name)],
                                      consequences=[Tap(self.name)])
         self.add_mana_action(chrome_mox_activate, adding=[ColorDict({c: 1}) for c in COLORS])
@@ -194,9 +199,9 @@ class BurningWish(Card):
                                        consequences=[MoveCard(self.name, 'Hand', 'Exile'),
                                                      MoveCard(card_for_burning_wish, 'Sideboard', 'Hand'),
                                                      AddStorm()])
-        self.add_mana_action(burning_wish_wish, paying=color_combinations(ColorDict({'Red': 1, 'Colorless': 1})))
+            self.add_mana_action(burning_wish_wish, paying=color_combinations(ColorDict({'Red': 1, 'Colorless': 1})))
 
-class ReforgeTheSoul(Card)
+class ReforgeTheSoul(Card):
     def __init__(self):
         super(ReforgeTheSoul, self).__init__('Reforge the Soul')
         reforge_the_soul_action = Action(requirements=[CardInHand(self.name)],

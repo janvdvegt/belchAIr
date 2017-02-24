@@ -67,6 +67,13 @@ class GameState(object):
                                         StormCountZero(),
                                         DealGoblinDamage(),
                                         DrawCard()])]
+
+        actions = [Action(requirements=[], consequences=[AddTurn(),
+                                                         UntapPermanents(),
+                                                         ResetManaPool(),
+                                                         StormCountZero(),
+                                                         DealGoblinDamage(),
+                                                         DrawCard()])]
         for card, _, _ in self.cards:
             actions.extend(card.actions)
         return actions
@@ -74,6 +81,7 @@ class GameState(object):
     def state_space(self):
         # We should make it so we can just add em all up for the correct representation.
         # The objects should know
+
         representation_list = []
         for card, _, _ in self.cards:
             representation_list.append(self.deck[card.name])
@@ -220,6 +228,7 @@ class GameState(object):
     def __str__(self):
         # It'd be nice to rely on something higher level to represent the game in string form.
         # I find big functions like this hard to manage, but they might not ever really change.
+
         repr_str = 'GAME STATE: \n'
         #repr_str += '  Cards in hand:      ' + str(sum([self.hand[k] for k in self.hand])) + '\n'
         #repr_str += '  Cards in deck:      ' + str(sum([self.deck[k] for k in self.deck])) + '\n'
