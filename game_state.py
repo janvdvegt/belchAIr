@@ -68,12 +68,6 @@ class GameState(object):
                                         DealGoblinDamage(),
                                         DrawCard()])]
 
-        actions = [Action(requirements=[], consequences=[AddTurn(),
-                                                         UntapPermanents(),
-                                                         ResetManaPool(),
-                                                         StormCountZero(),
-                                                         DealGoblinDamage(),
-                                                         DrawCard()])]
         for card, _, _ in self.cards:
             actions.extend(card.actions)
         return actions
