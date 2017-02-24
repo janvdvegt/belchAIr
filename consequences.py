@@ -184,6 +184,9 @@ class ResetManaPool(Consequence):
         return 'Reset mana pool'
 
 class AddTurn(Consequence):
+    # I think there should be some more meta consequences and requirements like this
+    # A ClearStack Consequence for example, with an EmptyStack requirement 
+    # The EmpytStack requirement would indicate sorcery speed effects. 
     def resolve(self, game_state):
         game_state.add_turn()
 
