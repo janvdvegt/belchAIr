@@ -1,4 +1,5 @@
-COLORS = ['Red', 'Green', 'Blue']
+#COLORS = ['Red', 'Green', 'Blue', 'White', 'Black']
+COLORS = ['Red', 'Green']
 CARDS_FOR_CHROME_MOX = ['Elvish Spirit Guide', 'Simian Spirit Guide',
                         'Tinder Wall', 'Desperate Ritual', 'Pyretic Ritual',
                         'Rite of Flame', 'Seething Song', 'Empty the Warrens',
