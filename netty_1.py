@@ -3,12 +3,13 @@ import numpy as np
 
 
 class Netty(object):
-    def __init__(self, game_state, nlayers, nneurons, learning_rate, batch_size):
+    def __init__(self, game_state, nlayers, nneurons, learning_rate, batch_size, epsilon):
         self.game_state = game_state
         self.nlayers = nlayers
         self.nneurons = nneurons
         self.learning_rate = learning_rate
         self.batch_size = batch_size
+        self.epsilon = epsilon
 
         self.sess = None
 
@@ -22,7 +23,12 @@ class Netty(object):
         self.sess = tf.Session()
         self.state_input = tf.placeholder(tf.float32, shape=(None, self.game_state_dim), name = 'state_input')
         self.legal_actions = tf.placeholder(tf.float32, shape=(None, self.action_dim), name='legal_actions')
-        self.reward = tf.placeholder(tf.float32, shape=(None, 1), name = 'reward')
+        #self.action_taken = tf.placeholder(tf.float32, shape=(None, self.action_dim), name='action_taken')
+        self.action_taken = tf.placeholder(tf.int32, shape=(None, 1), name='action_taken')
+
+        #self.reward = tf.placeholder(tf.float32, name = 'reward')
+
+        self.action_taken = tf.one_hot(self.action_taken, self.action_dim)
 
         self.W1 = tf.Variable(tf.random_normal([self.game_state_dim, self.nneurons], stddev=0.3), name='W1')
         self.b1 = tf.Variable(tf.random_normal([self.nneurons], stddev=0.3), name='b1')
@@ -43,14 +49,63 @@ class Netty(object):
         self.out_layer_sm_legal = tf.multiply(self.out_layer_sm_legal,
                                               tf.reciprocal(self.normalization_sum))
 
+        #self.zero = tf.constant(0, dtype=tf.float32)
+        #self.out_layer_filtered = tf.not_equal(self.out_layer_sm_legal, self.zero)
+
+        # Implement custom softmax
+        #self.log_likelihood = tf.multiply(tf.log(self.out_layer_sm_legal), self.action_taken)
+        #self.
+
+        self.loss = tf.nn.softmax_cross_entropy_with_logits(labels=self.action_taken,
+                                                            logits=self.out_layer, name='loss_function') # * self.reward
+        self.optimizer = tf.train.AdamOptimizer()
+        self.train_op = self.optimizer.minimize(self.loss)
+
         self.sess.run(tf.global_variables_initializer())
 
     def play_game(self):
         self.game_state.reset_game()
         reward = None
+        actions_taken = []
+        state_inputs = []
+        legal_actions_list = []
         while reward is None:
-            legal_actions, all_actions = self.game_state.legal_actions()
+            legal_actions, all_actions = self.game_state.possible_actions()
             current_game_state = self.game_state.state_space()
+            legal_actions_list.append(legal_actions)
+            state_inputs.append(current_game_state)
+            policy_probs = self.sess.run(self.out_layer_sm_legal,
+                                         feed_dict={self.state_input: [current_game_state],
+                                                    self.legal_actions: [legal_actions]})
+            action_to_take = np.argmax(policy_probs)
+            if np.random.rand() < self.epsilon:
+                action_to_take = np.random.choice([index for index, action in enumerate(legal_actions) if action == 1])
+            actions_taken.append(action_to_take)
+            reward = all_actions[action_to_take].resolve(self.game_state)
+        total_rewards = np.concatenate((np.zeros(len(actions_taken) - 1), [reward]))
+        total_rewards_disc = discount_rewards(total_rewards)
+        return actions_taken, total_rewards_disc, legal_actions_list, state_inputs
+
+
+    def train(self):
+        actions_taken, total_rewards_disc, legal_actions_list, state_inputs = self.play_game()
+        losses = []
+        for i in range(100):
+            for action_taken, disc_reward, legal_actions, state_input in zip(actions_taken, total_rewards_disc, legal_actions_list, state_inputs):
+                print(disc_reward)
+                #print(action_taken)
+                #action_taken = tf.one_hot([action_taken], self.action_dim)
+                #print(action_taken)
+                self.sess.run(self.train_op, feed_dict={self.state_input: [state_input],
+                                                        self.legal_actions: [legal_actions],
+                                                        self.action_taken: [action_taken]})
+                                                        #self.reward: np.array([disc_reward])})
+                losses.append(self.sess.run(self.loss, feed_dict={self.state_input: [state_input],
+                                                        self.legal_actions: [legal_actions],
+                                                        self.action_taken: [action_taken]}))
+                                                        #self.reward: np.array([disc_reward])}))
+        return losses
+
 
 
 def discount_rewards(r):

@@ -48,7 +48,7 @@ game_state.draw_opening_hand()
 
 print(game_state.state_space())
 
-netty = Netty(game_state, 2, 5, 0.001, 8)
+netty = Netty(game_state, 2, 5, 0.001, 8, 0.05)
 netty.build_model()
 print(netty.sess.run(netty.out_layer_sm, feed_dict={netty.state_input: [np.ones(netty.game_state_dim)],
                                                     netty.legal_actions: [np.concatenate((np.ones(20), np.zeros(netty.action_dim-20)))]}))
@@ -58,7 +58,10 @@ print(np.sum(netty.sess.run(netty.out_layer_sm, feed_dict={netty.state_input: [n
                                                     netty.legal_actions: [np.concatenate((np.ones(20), np.zeros(netty.action_dim-20)))]})))
 print(np.sum(netty.sess.run(netty.out_layer_sm_legal, feed_dict={netty.state_input: [np.ones(netty.game_state_dim)],
                                                           netty.legal_actions: [np.concatenate((np.ones(20), np.zeros(netty.action_dim-20)))]})))
-print('Hoi')
+
+
+losses = netty.train()
+print(losses)
 
 """agent = Agent(game_state)
 agent.run()
