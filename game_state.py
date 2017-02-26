@@ -23,6 +23,11 @@ class GameState(object):
         self.opp_life_total = 20
         self.taiga_bottom = False
         self.turn = 1
+        self.lost = False
+        self.won = False
+
+        self.actions_set = False
+        self.actions = []
 
         self.cards = []
 
@@ -47,6 +52,8 @@ class GameState(object):
         self.opp_life_total = 20
         self.taiga_bottom = False
         self.turn = 1
+        self.lost = False
+        self.won = False
 
     def possible_actions(self):
         """
@@ -58,16 +65,27 @@ class GameState(object):
         legal_actions = [x.allowed(self) * 1 for x in all_actions]
         return legal_actions, all_actions
 
+    def reward(self):
+        if not self.won and not self.lost:
+            return None
+        if self.won:
+            return -1 * self.turn
+        return -100
+
     def all_actions(self):
-        actions = [Action(requirements=[], consequences=[AddTurn(),
-                                                         UntapPermanents(),
-                                                         ResetManaPool(),
-                                                         StormCountZero(),
-                                                         DealGoblinDamage(),
-                                                         DrawCard()])]
+        if self.actions_set:
+            return self.actions
+        self.actions = [Action(requirements=[], consequences=[AddTurn(),
+                                                              UntapPermanents(),
+                                                              ResetManaPool(),
+                                                              StormCountZero(),
+                                                              DrawCard(),
+                                                              DealGoblinDamage()
+                                                              ])]
         for card, _, _ in self.cards:
-            actions.extend(card.actions)
-        return actions
+            self.actions.extend(card.actions)
+        self.actions_set = True
+        return self.actions
 
     def state_space(self):
         representation_list = []
@@ -120,9 +138,13 @@ class GameState(object):
 
     def goblin_damage(self):
         self.opp_life_total -= self.goblins
+        if self.opp_life_total < 1:
+            self.won = True
 
     def damage_opponent(self, damage):
         self.opp_life_total -= damage
+        if self.opp_life_total < 1:
+            self.won = True
 
     def untap_permanents(self):
         for card, _, _ in self.cards:
@@ -152,10 +174,14 @@ class GameState(object):
         self.taiga_bottom = False
 
     def draw_cards(self, amount):
-        cards_to_draw = choice(self._list_deck(), amount, False)
-        for card_to_draw in cards_to_draw:
-            self.deck[card_to_draw] -= 1
-            self.hand[card_to_draw] += 1
+        list_deck = self._list_deck()
+        if len(list_deck) < amount:
+            self.lost = True
+        else:
+            cards_to_draw = choice(list_deck, amount, False)
+            for card_to_draw in cards_to_draw:
+                self.deck[card_to_draw] -= 1
+                self.hand[card_to_draw] += 1
 
     def _list_deck(self, include_Taiga=True, shuffle_list=False):
         deck_list = []
@@ -247,4 +273,6 @@ class GameState(object):
         repr_str += '\nACTIONS: ' + str(sum(self.possible_actions()[0])) + '\n'
         repr_str += 'GOBLINS: ' + str(self.goblins) + '\n'
         repr_str += 'TURN: ' + str(self.turn) + '\n'
+        repr_str += 'OPP LIFETOTAL: ' + str(self.opp_life_total) + '\n'
+
         return repr_str

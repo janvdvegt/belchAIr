@@ -44,6 +44,8 @@ game_state.add_card(reforge_the_soul, 0, 1)
 game_state.reset_game()
 game_state.draw_opening_hand()
 
+print(len(game_state.state_space()))
+
 agent = Agent(game_state)
 agent.run()
 

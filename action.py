@@ -26,7 +26,9 @@ class Action(object):
 
     def resolve(self, game_state):
         for consequence in self.consequences:
-            consequence.resolve(game_state)
+            reward = consequence.resolve(game_state)
+            if reward is not None:
+                return reward
 
     def copy(self):
         return Action(self.requirements.copy(), self.consequences.copy())

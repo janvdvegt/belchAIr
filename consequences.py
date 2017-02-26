@@ -100,6 +100,7 @@ class DrawCard(Consequence):
 
     def resolve(self, game_state):
         game_state.draw_cards(self.amount)
+        return game_state.reward()
 
     def __str__(self):
         return 'Drawing ' + str(self.amount) + ' cards'
@@ -131,6 +132,7 @@ class Belch(Consequence):
     """
     def resolve(self, game_state):
         game_state.belch()
+        return game_state.reward()
 
     def __str__(self):
         return 'BURRRRRRPPppppp'
@@ -156,6 +158,7 @@ class UntapPermanents(Consequence):
 class DealGoblinDamage(Consequence):
     def resolve(self, game_state):
         game_state.goblin_damage()
+        return game_state.reward()
 
     def __str__(self):
         return 'Attack with all goblins'
