@@ -1,8 +1,9 @@
 from numpy.random import choice
 
 class Agent(object):
-    def __init__(self, game_state):
+    def __init__(self, game_state, age=50):
         self.game_state = game_state
+        self.age = age
 
     def step(self):
         allowed, actions = self.game_state.possible_actions()
@@ -12,6 +13,10 @@ class Agent(object):
         return action_to_take.resolve(self.game_state)
 
     def run(self):
+        for i in range(self.age):
+            print(self.game_state)
+            self.step()
+        print(self.game_state)
         got_rewarded = False
         for i in range(5000):
             print(self.game_state)

@@ -35,6 +35,7 @@ class GameState(object):
         self.cards.append((card, maindeck, sideboard))
 
     def reset_game(self):
+        # Shouldn't this be some sort of new() function ?
         for card, maindeck, sideboard in self.cards:
             self.deck[card.name] = maindeck
             if sideboard > 0:
@@ -75,19 +76,23 @@ class GameState(object):
     def all_actions(self):
         if self.actions_set:
             return self.actions
-        self.actions = [Action(requirements=[], consequences=[AddTurn(),
-                                                              UntapPermanents(),
-                                                              ResetManaPool(),
-                                                              StormCountZero(),
-                                                              DrawCard(),
-                                                              DealGoblinDamage()
-                                                              ])]
+        self.actions = [Action(requirements=[],
+                               consequences=[AddTurn(),
+                                             UntapPermanents(),
+                                             ResetManaPool(),
+                                             StormCountZero(),
+                                             DrawCard(),
+                                             DealGoblinDamage()
+                                             ])]
         for card, _, _ in self.cards:
             self.actions.extend(card.actions)
         self.actions_set = True
         return self.actions
 
     def state_space(self):
+        # We should make it so we can just add em all up for the correct representation.
+        # The objects should know
+
         representation_list = []
         for card, _, _ in self.cards:
             representation_list.append(self.deck[card.name])
@@ -240,6 +245,9 @@ class GameState(object):
         raise ValueError('Incorrect zone type', zone)
 
     def __str__(self):
+        # It'd be nice to rely on something higher level to represent the game in string form.
+        # I find big functions like this hard to manage, but they might not ever really change.
+
         repr_str = 'GAME STATE: \n'
         #repr_str += '  Cards in hand:      ' + str(sum([self.hand[k] for k in self.hand])) + '\n'
         #repr_str += '  Cards in deck:      ' + str(sum([self.deck[k] for k in self.deck])) + '\n'
@@ -273,6 +281,10 @@ class GameState(object):
         repr_str += '\nACTIONS: ' + str(sum(self.possible_actions()[0])) + '\n'
         repr_str += 'GOBLINS: ' + str(self.goblins) + '\n'
         repr_str += 'TURN: ' + str(self.turn) + '\n'
+<<<<<<< HEAD
+        return repr_str
+=======
         repr_str += 'OPP LIFETOTAL: ' + str(self.opp_life_total) + '\n'
 
         return repr_str
+>>>>>>> 4d5354e4f170b7832218db75dce204ada8d5ecd5
