@@ -70,8 +70,8 @@ class GameState(object):
         if not self.won and not self.lost:
             return None
         if self.won:
-            return -1 * self.turn
-        return -100
+            return 60 - self.turn
+        return 1
 
     def all_actions(self):
         if self.actions_set:
@@ -195,7 +195,7 @@ class GameState(object):
                 deck_list.extend([card_name for _ in range(self.deck[card_name])])
         if shuffle_list:
             shuffle(deck_list)
-        if self.taiga_bottom and include_Taiga:
+        if self.taiga_bottom and include_Taiga and self.deck['Taiga'] > 0:
             deck_list.append('Taiga')
         return deck_list
 
@@ -281,10 +281,6 @@ class GameState(object):
         repr_str += '\nACTIONS: ' + str(sum(self.possible_actions()[0])) + '\n'
         repr_str += 'GOBLINS: ' + str(self.goblins) + '\n'
         repr_str += 'TURN: ' + str(self.turn) + '\n'
-<<<<<<< HEAD
-        return repr_str
-=======
         repr_str += 'OPP LIFETOTAL: ' + str(self.opp_life_total) + '\n'
 
         return repr_str
->>>>>>> 4d5354e4f170b7832218db75dce204ada8d5ecd5

@@ -1,7 +1,9 @@
 from cards.cards import *
 from game_state import GameState
 from agent import Agent
+from netty_1 import Netty
 from timeit import timeit
+import numpy as np
 
 taiga = Taiga()
 elvish_spirit_guide = ElvishSpiritGuide()
@@ -44,9 +46,21 @@ game_state.add_card(reforge_the_soul, 0, 1)
 game_state.reset_game()
 game_state.draw_opening_hand()
 
-print(len(game_state.state_space()))
+print(game_state.state_space())
 
-agent = Agent(game_state)
+netty = Netty(game_state, 2, 5, 0.001, 8)
+netty.build_model()
+print(netty.sess.run(netty.out_layer_sm, feed_dict={netty.state_input: [np.ones(netty.game_state_dim)],
+                                                    netty.legal_actions: [np.concatenate((np.ones(20), np.zeros(netty.action_dim-20)))]}))
+print(netty.sess.run(netty.out_layer_sm_legal, feed_dict={netty.state_input: [np.ones(netty.game_state_dim)],
+                                                          netty.legal_actions: [np.concatenate((np.ones(20), np.zeros(netty.action_dim-20)))]}))
+print(np.sum(netty.sess.run(netty.out_layer_sm, feed_dict={netty.state_input: [np.ones(netty.game_state_dim)],
+                                                    netty.legal_actions: [np.concatenate((np.ones(20), np.zeros(netty.action_dim-20)))]})))
+print(np.sum(netty.sess.run(netty.out_layer_sm_legal, feed_dict={netty.state_input: [np.ones(netty.game_state_dim)],
+                                                          netty.legal_actions: [np.concatenate((np.ones(20), np.zeros(netty.action_dim-20)))]})))
+print('Hoi')
+
+"""agent = Agent(game_state)
 agent.run()
 
 
@@ -54,9 +68,7 @@ def run_game():
     game_state.reset_game()
     game_state.draw_opening_hand()
     agent = Agent(game_state)
-    agent.run()
-
-#print(timeit('run_game()', setup='from __main__ import run_game', number=1000))
+    agent.run()"""
 
 """
 game_state.increase_card_count('Lions Eye Diamond', 'Hand')
