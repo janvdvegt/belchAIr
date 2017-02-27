@@ -34,7 +34,7 @@ class GameState(object):
     def add_card(self, card, maindeck, sideboard):
         self.cards.append((card, maindeck, sideboard))
 
-    def reset_game(self):
+    def reset_game(self, draw_opening_hand=True, test=False):
         for card, maindeck, sideboard in self.cards:
             self.deck[card.name] = maindeck
             if sideboard > 0:
@@ -54,7 +54,16 @@ class GameState(object):
         self.turn = 1
         self.lost = False
         self.won = False
-        self.draw_opening_hand()
+        if draw_opening_hand:
+            self.draw_opening_hand()
+        if test:
+            self.add_mana(ColorDict({'Red': 2}))
+            self.increase_card_count('Goblin Charbelcher', 'Battlefield')
+            self.increase_card_count('Taiga', 'Battlefield')
+            #self.increase_card_count('Seething Song', 'Hand')
+            self.reduce_card_count('Goblin Charbelcher', 'Deck')
+            self.reduce_card_count('Taiga', 'Deck')
+            #self.reduce_card_count('Seething Song', 'Deck')
 
     def possible_actions(self):
         """
@@ -76,7 +85,9 @@ class GameState(object):
     def all_actions(self):
         if self.actions_set:
             return self.actions
-        self.actions = [Action(requirements=[],
+        self.actions = [Action('Game',
+                               'Pass turn',
+                               requirements=[],
                                consequences=[AddTurn(),
                                              UntapPermanents(),
                                              ResetManaPool(),
@@ -85,6 +96,7 @@ class GameState(object):
                                              DealGoblinDamage()
                                              ])]
         for card, _, _ in self.cards:
+            print(card.name, len(self.actions))
             self.actions.extend(card.actions)
         self.actions_set = True
         return self.actions

@@ -24,6 +24,7 @@ goblin_charbelcher = GoblinCharbelcher()
 chrome_mox = ChromeMox()
 burning_wish = BurningWish()
 reforge_the_soul = ReforgeTheSoul()
+print(taiga.is_tappable)
 
 game_state = GameState()
 game_state.add_card(taiga, 1, 0)
@@ -45,11 +46,64 @@ game_state.add_card(chrome_mox, 3, 0)
 game_state.add_card(burning_wish, 4, 0)
 game_state.add_card(reforge_the_soul, 0, 1)
 game_state.reset_game()
-#game_state.draw_opening_hand()
+game_state.all_actions()
+
+test_game_state = GameState()
+test_game_state.add_card(taiga, 1, 0)
+test_game_state.add_card(elvish_spirit_guide, 4, 0)
+test_game_state.add_card(simian_spirit_guide, 4, 0)
+test_game_state.add_card(tinder_wall, 4, 0)
+test_game_state.add_card(desperate_ritual, 4, 0)
+test_game_state.add_card(pyretic_ritual, 3, 0)
+test_game_state.add_card(rite_of_flame, 4, 0)
+test_game_state.add_card(seething_song, 4, 0)
+test_game_state.add_card(empty_the_warrens, 3, 1)
+test_game_state.add_card(gitaxian_probe, 4, 0)
+test_game_state.add_card(land_grant, 4, 0)
+test_game_state.add_card(lions_eye_diamond, 4, 0)
+test_game_state.add_card(lotus_petal, 4, 0)
+test_game_state.add_card(manamorphose, 2, 0)
+test_game_state.add_card(goblin_charbelcher, 4, 0)
+test_game_state.add_card(chrome_mox, 3, 0)
+test_game_state.add_card(burning_wish, 4, 0)
+test_game_state.add_card(reforge_the_soul, 0, 1)
+test_game_state.reset_game(False)
+
+#print(test_game_state.deck)
+#print(test_game_state.hand)
+
+#print(test_game_state.battlefield)
+#legal_actions, all_actions = test_game_state.possible_actions()
+#for legal_action, action in zip(legal_actions, all_actions):
+#    if legal_action == 1:
+#        print(action.card_name, ', ', action.action_name)
+
+test_game_state.reduce_card_count('Rite of Flame', 'Deck')
+test_game_state.reduce_card_count('Rite of Flame', 'Deck')
+test_game_state.reduce_card_count('Seething Song', 'Deck')
+test_game_state.reduce_card_count('Taiga', 'Deck')
+test_game_state.reduce_card_count('Goblin Charbelcher', 'Deck')
+test_game_state.reduce_card_count('Empty the Warrens', 'Deck')
+test_game_state.reduce_card_count('Lions Eye Diamond', 'Deck')
+test_game_state.increase_card_count('Rite of Flame', 'Hand')
+test_game_state.increase_card_count('Rite of Flame', 'Hand')
+test_game_state.increase_card_count('Seething Song', 'Hand')
+test_game_state.increase_card_count('Taiga', 'Hand')
+test_game_state.increase_card_count('Goblin Charbelcher', 'Hand')
+test_game_state.increase_card_count('Empty the Warrens', 'Hand')
+test_game_state.increase_card_count('Lions Eye Diamond', 'Battlefield')
+
+# Passing turn (0)
+# Playing Taiga (1)
+# Lions Eye Diamond activate (24, 25)
+# Belcher activate 40-43
 
 #print(game_state.state_space())
+#nlayers, nneurons, learning_rate, batch_size, number_batches, buffer_size, batch_games, epsilon
+netty = Netty(game_state, 2, 64, 0.001, 512, 100, 200000, 500, 0.5, test_game_state)
+netty.play_and_train()
 
-netty = Netty(game_state, 2, 5, 0.001, 8, 100000, 500, 0.05)
+"""netty = Netty(game_state, 2, 5, 0.001, 8, 100000, 500, 0.05)
 
 action_taken = one_hot([0], netty.action_dim)
 
@@ -78,7 +132,7 @@ for legal_action in legal_actions_list:
 print(np.array(legal_actions_list).shape)
 for state_input in state_inputs:
     print(state_input)
-print(np.array(state_inputs).shape)
+print(np.array(state_inputs).shape)"""
 
 """
 losses = []

@@ -10,7 +10,9 @@ class Action(object):
     """
     Action Class, gathers requirements and consequences.
     """
-    def __init__(self, requirements=None, consequences=None):
+    def __init__(self, card_name, action_name, requirements=None, consequences=None):
+        self.card_name = card_name
+        self.action_name = action_name
         self.requirements = requirements if requirements else []
         self.consequences = consequences if consequences else []
 
@@ -31,7 +33,7 @@ class Action(object):
                 return reward
 
     def copy(self):
-        return Action(self.requirements.copy(), self.consequences.copy())
+        return Action(self.card_name, self.action_name, self.requirements.copy(), self.consequences.copy())
 
     def __str__(self):
         str_repr = 'Requirements:\n'
