@@ -1,15 +1,18 @@
 import tensorflow as tf
 import numpy as np
+from util import one_hot
 
 
 class Netty(object):
-    def __init__(self, game_state, nlayers, nneurons, learning_rate, batch_size, epsilon):
+    def __init__(self, game_state, nlayers, nneurons, learning_rate, batch_size, buffer_size, batch_games, epsilon):
         self.game_state = game_state
         self.nlayers = nlayers
         self.nneurons = nneurons
         self.learning_rate = learning_rate
         self.batch_size = batch_size
         self.epsilon = epsilon
+        self.buffer_size = buffer_size
+        self.batch_games = batch_games
 
         self.sess = None
 
@@ -23,12 +26,7 @@ class Netty(object):
         self.sess = tf.Session()
         self.state_input = tf.placeholder(tf.float32, shape=(None, self.game_state_dim), name = 'state_input')
         self.legal_actions = tf.placeholder(tf.float32, shape=(None, self.action_dim), name='legal_actions')
-        #self.action_taken = tf.placeholder(tf.float32, shape=(None, self.action_dim), name='action_taken')
-        self.action_taken = tf.placeholder(tf.int32, shape=(None, 1), name='action_taken')
-
-        #self.reward = tf.placeholder(tf.float32, name = 'reward')
-
-        self.action_taken = tf.one_hot(self.action_taken, self.action_dim)
+        self.action_taken = tf.placeholder(tf.int32, shape=(None, self.action_dim), name='action_taken')
 
         self.W1 = tf.Variable(tf.random_normal([self.game_state_dim, self.nneurons], stddev=0.3), name='W1')
         self.b1 = tf.Variable(tf.random_normal([self.nneurons], stddev=0.3), name='b1')
@@ -42,22 +40,31 @@ class Netty(object):
         self.bout = tf.Variable(tf.random_normal([self.action_dim], stddev=0.3), name='bout')
         self.out_layer = tf.matmul(self.hidden_layer2, self.Wout) + self.bout
 
-        self.out_layer_sm = tf.nn.softmax(self.out_layer, name='out_sm')
+        self.zero = tf.constant(0, dtype=tf.float32)
+        self.action_mask = tf.not_equal(self.legal_actions, self.zero)
 
+        print('action_mask', self.action_mask.get_shape())
+
+        self.out_layer_masked = tf.boolean_mask(self.out_layer, self.action_mask)
+        print('out_layer_masked', self.out_layer_masked.get_shape())
+        self.action_taken_masked = tf.boolean_mask(self.action_taken, self.action_mask)
+        print('action_taken_masked', self.action_taken_masked.get_shape())
+
+        self.out_layer_masked_sm = tf.nn.softmax(self.out_layer_masked, name='out_masked_sm')
+        print('out_layer_masked_sm', self.out_layer_masked_sm.get_shape())
+
+        self.out_layer_sm = tf.nn.softmax(self.out_layer, name='out_sm')
+        print('out_layer_sm', self.out_layer_sm.get_shape())
         self.out_layer_sm_legal = self.out_layer_sm * self.legal_actions
+        print('out_layer_sm_legal', self.out_layer_sm_legal.get_shape())
         self.normalization_sum = tf.reduce_sum(self.out_layer_sm_legal)
+        print('normalization_sum', self.normalization_sum.get_shape())
         self.out_layer_sm_legal = tf.multiply(self.out_layer_sm_legal,
                                               tf.reciprocal(self.normalization_sum))
+        print('out_layer_sm_legal', self.out_layer_sm_legal.get_shape())
 
-        #self.zero = tf.constant(0, dtype=tf.float32)
-        #self.out_layer_filtered = tf.not_equal(self.out_layer_sm_legal, self.zero)
-
-        # Implement custom softmax
-        #self.log_likelihood = tf.multiply(tf.log(self.out_layer_sm_legal), self.action_taken)
-        #self.
-
-        self.loss = tf.nn.softmax_cross_entropy_with_logits(labels=self.action_taken,
-                                                            logits=self.out_layer, name='loss_function') # * self.reward
+        self.loss = tf.nn.softmax_cross_entropy_with_logits(labels=self.action_taken_masked,
+                                                            logits=self.out_layer_masked, name='loss_function') # * self.reward
         self.optimizer = tf.train.AdamOptimizer()
         self.train_op = self.optimizer.minimize(self.loss)
 
@@ -79,6 +86,7 @@ class Netty(object):
                                                     self.legal_actions: [legal_actions]})
             action_to_take = np.argmax(policy_probs)
             if np.random.rand() < self.epsilon:
+                #action_to_take = np.random.randint(len(policy_probs))
                 action_to_take = np.random.choice([index for index, action in enumerate(legal_actions) if action == 1])
             actions_taken.append(action_to_take)
             reward = all_actions[action_to_take].resolve(self.game_state)

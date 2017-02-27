@@ -35,7 +35,6 @@ class GameState(object):
         self.cards.append((card, maindeck, sideboard))
 
     def reset_game(self):
-        # Shouldn't this be some sort of new() function ?
         for card, maindeck, sideboard in self.cards:
             self.deck[card.name] = maindeck
             if sideboard > 0:
@@ -55,6 +54,7 @@ class GameState(object):
         self.turn = 1
         self.lost = False
         self.won = False
+        self.draw_opening_hand()
 
     def possible_actions(self):
         """
@@ -115,6 +115,9 @@ class GameState(object):
         representation_list.append(self.storm_count)
         representation_list.append(self.opp_life_total)
         representation_list.append(self.taiga_bottom * 1)
+        representation_list.append(self.turn)
+        number_cards_in_deck = sum([self.deck[k] for k in self.deck])
+        representation_list.append(number_cards_in_deck)
         return representation_list
 
     def untapped(self, card):

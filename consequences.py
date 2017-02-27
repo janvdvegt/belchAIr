@@ -140,6 +140,7 @@ class Belch(Consequence):
     """
     def resolve(self, game_state):
         game_state.belch()
+        print(self)
         return game_state.reward()
 
     def __str__(self):

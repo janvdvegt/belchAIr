@@ -4,6 +4,7 @@ from agent import Agent
 from netty_1 import Netty
 from timeit import timeit
 import numpy as np
+from util import one_hot
 
 taiga = Taiga()
 elvish_spirit_guide = ElvishSpiritGuide()
@@ -44,24 +45,56 @@ game_state.add_card(chrome_mox, 3, 0)
 game_state.add_card(burning_wish, 4, 0)
 game_state.add_card(reforge_the_soul, 0, 1)
 game_state.reset_game()
-game_state.draw_opening_hand()
+#game_state.draw_opening_hand()
 
-print(game_state.state_space())
+#print(game_state.state_space())
 
-netty = Netty(game_state, 2, 5, 0.001, 8, 0.05)
-netty.build_model()
-print(netty.sess.run(netty.out_layer_sm, feed_dict={netty.state_input: [np.ones(netty.game_state_dim)],
-                                                    netty.legal_actions: [np.concatenate((np.ones(20), np.zeros(netty.action_dim-20)))]}))
+netty = Netty(game_state, 2, 5, 0.001, 8, 100000, 500, 0.05)
+
+action_taken = one_hot([0], netty.action_dim)
+
+#print(netty.sess.run(netty.out_layer_sm, feed_dict={netty.state_input: [np.ones(netty.game_state_dim)],
+#                                                    netty.legal_actions: [np.concatenate((np.ones(20), np.zeros(netty.action_dim-20)))]}))
+#print(netty.sess.run(netty.out_layer_sm_legal, feed_dict={netty.state_input: [np.ones(netty.game_state_dim)],
+#                                                          netty.legal_actions: [np.concatenate((np.ones(20), np.zeros(netty.action_dim-20)))]}))
+#print(np.sum(netty.sess.run(netty.out_layer_sm, feed_dict={netty.state_input: [np.ones(netty.game_state_dim)],
+#                                                    netty.legal_actions: [np.concatenate((np.ones(20), np.zeros(netty.action_dim-20)))]})))
+#print(np.sum(netty.sess.run(netty.out_layer_masked, feed_dict={netty.state_input: [np.ones(netty.game_state_dim)],
+#                                                          netty.legal_actions: [np.concatenate((np.ones(20), np.zeros(netty.action_dim-20)))]})))
+
 print(netty.sess.run(netty.out_layer_sm_legal, feed_dict={netty.state_input: [np.ones(netty.game_state_dim)],
                                                           netty.legal_actions: [np.concatenate((np.ones(20), np.zeros(netty.action_dim-20)))]}))
-print(np.sum(netty.sess.run(netty.out_layer_sm, feed_dict={netty.state_input: [np.ones(netty.game_state_dim)],
-                                                    netty.legal_actions: [np.concatenate((np.ones(20), np.zeros(netty.action_dim-20)))]})))
-print(np.sum(netty.sess.run(netty.out_layer_sm_legal, feed_dict={netty.state_input: [np.ones(netty.game_state_dim)],
-                                                          netty.legal_actions: [np.concatenate((np.ones(20), np.zeros(netty.action_dim-20)))]})))
+print(netty.sess.run(netty.out_layer_masked_sm, feed_dict={netty.state_input: [np.ones(netty.game_state_dim)],
+                                                          netty.legal_actions: [np.concatenate((np.ones(20), np.zeros(netty.action_dim-20)))]}))
+print(netty.sess.run(netty.loss, feed_dict={netty.state_input: [np.ones(netty.game_state_dim)],
+                                            netty.legal_actions: [np.concatenate((np.ones(20), np.zeros(netty.action_dim-20)))],
+                                            netty.action_taken: action_taken}))
 
+actions_taken, total_rewards_disc, legal_actions_list, state_inputs = netty.play_game()
+print(actions_taken)
+print(total_rewards_disc)
+for legal_action in legal_actions_list:
+    print(legal_action)
+print(np.array(legal_actions_list).shape)
+for state_input in state_inputs:
+    print(state_input)
+print(np.array(state_inputs).shape)
 
-losses = netty.train()
-print(losses)
+"""
+losses = []
+for i in range(1000):
+    netty.sess.run(netty.train_op, feed_dict={netty.state_input: [np.ones(netty.game_state_dim)],
+                                              netty.legal_actions: [np.concatenate((np.ones(20), np.zeros(netty.action_dim-20)))],
+                                              netty.action_taken: action_taken})
+    cur_loss = netty.sess.run(netty.loss, feed_dict={netty.state_input: [np.ones(netty.game_state_dim)],
+                                            netty.legal_actions: [np.concatenate((np.ones(20), np.zeros(netty.action_dim-20)))],
+                                            netty.action_taken: action_taken})
+    losses.append(cur_loss)
+    if i % 25 == 0:
+        print(cur_loss)
+
+#losses = netty.train()
+#print(losses)"""
 
 """agent = Agent(game_state)
 agent.run()
