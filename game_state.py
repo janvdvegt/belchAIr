@@ -107,28 +107,29 @@ class GameState(object):
 
         representation_list = []
         for card, _, _ in self.cards:
-            representation_list.append(self.deck[card.name])
+            representation_list.append(self.deck[card.name]/4)
         for card, _, _ in self.cards:
-            representation_list.append(self.hand[card.name])
+            representation_list.append(self.hand[card.name]/4)
+        ## List over only permanents
         for card, _, _ in self.cards:
-            representation_list.append(self.battlefield[card.name])
+            representation_list.append(self.battlefield[card.name]/4)
         for card, _, _ in self.cards:
-            representation_list.append(self.graveyard[card.name])
+            representation_list.append(self.graveyard[card.name]/4)
         for card, _, _ in self.cards:
             if card.name in self.tapped:
-                representation_list.append(self.tapped[card.name])
+                representation_list.append(self.tapped[card.name]/4)
         for card, _, _ in self.cards:
             if card.name in self.sideboard:
                 representation_list.append(self.sideboard[card.name])
 
         for color in COLORS:
-            representation_list.append(self.mana_pool[color])
-        representation_list.append(self.goblins)
-        representation_list.append(self.storm_count)
-        representation_list.append(self.opp_life_total)
+            representation_list.append(self.mana_pool[color]/2)
+        representation_list.append(self.goblins/10)
+        representation_list.append(self.storm_count/4)
+        representation_list.append(self.opp_life_total/20)
         representation_list.append(self.taiga_bottom * 1)
-        representation_list.append(self.turn)
-        number_cards_in_deck = sum([self.deck[k] for k in self.deck])
+        representation_list.append(self.turn/10)
+        number_cards_in_deck = sum([self.deck[k] for k in self.deck]) / 53
         representation_list.append(number_cards_in_deck)
         return representation_list
 

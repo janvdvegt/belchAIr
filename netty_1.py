@@ -16,6 +16,8 @@ class Netty(object):
         self.number_batches = number_batches
         self.test_game_state = test_game_state
 
+        self.L2_LAMBDA = 0.00001
+
         self.sess = None
 
         self.action_taken_buffer = []
@@ -72,7 +74,8 @@ class Netty(object):
 
         self.loss = tf.nn.softmax_cross_entropy_with_logits(labels=self.action_taken_masked,
                                                             logits=self.out_layer_masked, name='loss_function') * self.reward
-        self.mean_loss = tf.reduce_mean(self.loss, name='mean_loss_function')
+        self.mean_loss = tf.reduce_mean(self.loss, name='mean_loss_function') + self.L2_LAMBDA * tf.nn.l2_loss(self.Wout) + \
+            self.L2_LAMBDA * tf.nn.l2_loss(self.W2) + self.L2_LAMBDA * tf.nn.l2_loss(self.W1)
 
         self.optimizer = tf.train.AdamOptimizer()
         self.train_op = self.optimizer.minimize(self.mean_loss)
@@ -198,7 +201,7 @@ def discount_rewards(r):
     discounted_r = np.zeros_like(r)
     running_add = 0
     for t in reversed(range(0, r.size)):
-        running_add = running_add * 0.9 + r[t]
+        running_add = running_add * 0.975 + r[t]
         discounted_r[t] = running_add
     return discounted_r
 
